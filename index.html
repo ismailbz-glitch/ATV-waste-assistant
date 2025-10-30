@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assistant de Catégorisation des Déchets · Microsoft 365 style</title>
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    :root{
+      --m-bg: #f3f2f1;
+      --m-card: #ffffff;
+      --m-text: #323130;
+      --m-text-subtle: #605e5c;
+      --m-border: #e1dfdd;
+      --m-accent: #0f6cbd;
+      --m-accent-hover: #115ea3;
+      --m-yes: #107c10;
+      --m-yes-hover: #0e6a0e;
+      --m-no: #d13438;
+      --m-no-hover: #b32f32;
+      --m-warning-bg: #fff4ce;
+      --m-warning-border: #ffb900;
+      --m-shadow: 0 2px 10px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.08);
+      --m-radius: 8px;
+      --m-focus: #0f6cbd;
+      --m-font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      --m-space-1: .25rem;
+      --m-space-2: .5rem;
+      --m-space-3: .75rem;
+      --m-space-4: 1rem;
+      --m-space-5: 1.25rem;
+      --m-space-6: 1.5rem;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --m-bg: #1f1f1f;
+        --m-card: #2a2a2a;
+        --m-text: #fafafa;
+        --m-text-subtle: #d2d0ce;
+        --m-border: #3a3a3a;
+        --m-accent: #479ef5;
+        --m-accent-hover: #2886de;
+        --m-yes: #2bb669;
+        --m-yes-hover: #26a15d;
+        --m-no: #ff6166;
+        --m-no-hover: #e4555a;
+        --m-warning-bg: #3a2a00;
+        --m-warning-border: #f2c200;
+        --m-shadow: 0 2px 10px rgba(0,0,0,.45), 0 1px 3px rgba(0,0,0,.35);
+      }
+    }
+    *{ box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin: 0;
+      font-family: var(--m-font);
+      color: var(--m-text);
+      background: var(--m-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--m-space-6);
+    }
+    .m-app{ width: 100%; max-width: 840px; background: var(--m-card); border: 1px solid var(--m-border); border-radius: var(--m-radius); box-shadow: var(--m-shadow); overflow: clip; }
+    .m-topbar{ display: flex; align-items: center; justify-content: space-between; padding: var(--m-space-4) var(--m-space-6); border-bottom: 1px solid var(--m-border); background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(15,108,189,0.06) 100%); }
+    .m-brand{ display: flex; align-items: center; gap: var(--m-space-3); }
+    .m-logo{ width: 28px; height: 28px; border-radius: 6px; background: var(--m-accent); display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; }
+    .m-title{ display: flex; flex-direction: column; }
+    .m-title h1{ font-size: 18px; margin: 0; font-weight: 650; }
+    .m-title span{ font-size: 12px; color: var(--m-text-subtle); }
+    .m-actions{ display: flex; gap: var(--m-space-3); }
+    .m-btn{ appearance: none; border: 1px solid var(--m-border); background: transparent; color: var(--m-text); border-radius: 6px; padding: .6rem .9rem; font-weight: 600; letter-spacing: .2px; cursor: pointer; transition: border-color .15s ease, background-color .15s ease, transform .06s ease; }
+    .m-btn:hover{ background: rgba(0,0,0,.03); }
+    .m-btn:focus-visible{ outline: 2px solid var(--m-focus); outline-offset: 2px; }
+    .m-btn:active{ transform: translateY(1px); }
+    .m-btn--primary{ background: var(--m-accent); color: #fff; border-color: transparent; }
+    .m-btn--primary:hover{ background: var(--m-accent-hover); }
+    .m-btn--success{ background: var(--m-yes); color: #fff; border-color: transparent; }
+    .m-btn--success:hover{ background: var(--m-yes-hover); }
+    .m-btn--danger{ background: var(--m-no); color: #fff; border-color: transparent; }
+    .m-btn--danger:hover{ background: var(--m-no-hover); }
+    .m-btn--ghost{ background: transparent; color: var(--m-accent); border-color: var(--m-accent); }
+    .m-btn--ghost:hover{ background: rgba(15,108,189,.07); }
+    .m-btn--block{ width: 100%; }
+    .m-content{ padding: var(--m-space-6); }
+    .m-card{ background: var(--m-card); border: 1px solid var(--m-border); border-radius: var(--m-radius); padding: var(--m-space-6); box-shadow: var(--m-shadow); }
+    .m-question{ font-size: 18px; font-weight: 650; line-height: 1.5; margin-bottom: var(--m-space-5); }
+    .m-buttons{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--m-space-3); margin-bottom: var(--m-space-4); }
+    .m-path{ display: flex; flex-wrap: wrap; gap: var(--m-space-2) var(--m-space-3); align-items: center; margin-bottom: var(--m-space-4); padding: var(--m-space-3); border: 1px dashed var(--m-border); border-radius: 6px; background: rgba(0,0,0,.02); }
+    .m-crumb{ display: inline-flex; align-items: center; gap: .4rem; padding: .25rem .5rem; border-radius: 999px; border: 1px solid var(--m-border); background: var(--m-card); font-size: 12px; }
+    .m-result{ text-align: center; }
+    .m-result h2{ font-size: 20px; margin: 0 0 var(--m-space-4); }
+    .m-badge{ display: inline-flex; align-items: center; justify-content: center; padding: .85rem 1rem; border-radius: 10px; border: 1px solid var(--m-border); background: linear-gradient(180deg, rgba(15,108,189,.06) 0%, rgba(15,108,189,.03) 100%); font-weight: 700; font-size: 22px; }
+    .m-note{ margin-top: var(--m-space-4); background: var(--m-warning-bg); border-left: 4px solid var(--m-warning-border); padding: var(--m-space-4); border-radius: 6px; text-align: left; }
+    .m-help{ margin-top: var(--m-space-6); display: flex; gap: var(--m-space-3); flex-wrap: wrap; justify-content: center; color: var(--m-text-subtle); font-size: 12px; }
+    @media (max-width: 520px){ .m-buttons{ grid-template-columns: 1fr; } .m-topbar{ flex-direction: column; align-items: flex-start; gap: var(--m-space-3); } }
+  </style>
+</head>
+<body>
+  <main class="m-app" role="application" aria-label="Assistant de catégorisation des déchets">
+    <header class="m-topbar">
+      <div class="m-brand">
+        <div class="m-logo" aria-hidden="true">A</div>
+        <div class="m-title">
+          <h1>Assistant de catégorisation des déchets</h1>
+          <span>Répondez aux questions pour identifier la bonne filière</span>
+        </div>
+      </div>
+      <div class="m-actions">
+        <button class="m-btn" type="button" id="btnResetTop" title="Réinitialiser (Alt+R)">Réinitialiser</button>
+      </div>
+    </header>
+    <section id="content" class="m-content">
+      <div class="m-card" id="card">
+        <div class="m-question" id="question">Chargement…</div>
+        <div id="pathContainer" class="m-path" hidden></div>
+        <div class="m-buttons" id="buttons" role="group" aria-label="Réponses possibles"></div>
+        <div>
+          <button class="m-btn m-btn--ghost m-btn--block" id="btnResetBottom" type="button">Recommencer</button>
+        </div>
+      </div>
+      <div class="m-help" aria-live="polite">
+        <span>Compatible SharePoint (web part Intégrer) · Thème clair/sombre · Alt+O / Alt+N / Alt+R</span>
+      </div>
+    </section>
+  </main>
+  <script>
+    let currentNode = 'start';
+    let pathHistory = [];
+    const decisionTree = {
+      start: { question: "Provient-il d'un laboratoire ou en quantité < 5L ? (hors poubelles, EPI, …)", yes: 'lab', no: 'pumpable' },
+      lab: { question: "Est-ce un déchet pour l'analyse de la DCO ?", yes: { result: "Tubes DCO" }, no: { result: "Produits de laboratoire" } },
+      pumpable: { question: "Est-il pompable ? (liquide, fluide)", yes: 'corrosive', no: 'solid_type' },
+      solid_type: { question: "S'agit-il d'un déchet type chiffons, EPI, poubelles ?", yes: { result: "Solides souillés" }, no: 'empty_container' },
+      empty_container: { question: "S'agit-il d'un contenant vide (bidon, flacon) ?", yes: 'glass_container', no: { result: "Pâteux non halogénés" } },
+      glass_container: { question: "Est-ce un contenant en verre ?", yes: { result: "Verrerie souillée" }, no: 'corrosive_container' },
+      corrosive_container: { question: "Est-ce un contenant vide ayant contenu un produit corrosif ou comburant ?", yes: { result: "Emballages vides corrosifs/comburants" }, no: { result: "Emballages vides" } },
+      corrosive: { question: "Est-il corrosif ?", yes: 'isocyanate', no: 'inflammable' },
+      isocyanate: { question: "Est-ce un isocyanate ?", yes: { result: "Isocyanate", special: true }, no: 'mineral_acid' },
+      mineral_acid: { question: "Est-ce un acide minéral ?", yes: 'halogenated_acid', no: 'halogenated_base' },
+      halogenated_acid: { question: "Est-ce un acide halogéné ?", yes: { result: "Acides minéraux halogénés" }, no: { result: "Acides minéraux non halogénés" } },
+      halogenated_base: { question: "Est-ce une base minérale halogénée ?", yes: { result: "Bases minérales halogénées" }, no: { result: "Bases minérales non halogénées" } },
+      inflammable: { question: "Est-il inflammable ?", yes: 'organic_product', no: 'dirty_water' },
+      organic_product: { question: "Est-ce un produit organique ?", yes: 'halogenated_solvent', no: { result: "Demande particulière", special: true } },
+      halogenated_solvent: { question: "Est-ce un solvant halogéné ?", yes: { result: "Solvants halogénés" }, no: { result: "Solvants non halogénés" } },
+      dirty_water: { question: "Est-ce de l'eau souillée ?", yes: { result: "FER (avec confirmation)", special: true }, no: { result: "Demande particulière", special: true } }
+    };
+    const els = {
+      card: document.getElementById('card'),
+      question: document.getElementById('question'),
+      buttons: document.getElementById('buttons'),
+      path: document.getElementById('pathContainer'),
+      resetTop: document.getElementById('btnResetTop'),
+      resetBottom: document.getElementById('btnResetBottom')
+    };
+    function renderPath(){
+      if(!pathHistory.length){
+        els.path.hidden = true;
+        els.path.innerHTML = "";
+        return;
+      }
+      els.path.hidden = false;
+      els.path.innerHTML = pathHistory.map((step, i) => {
+        const [q, a] = step.split(" → ");
+        return '<span class="m-crumb"><b>Q' + (i+1) + '.</b> ' + q + ' • <i>' + a + '</i></span>';
+      }).join("");
+    }
+    function showQuestion(nodeId){
+      const node = decisionTree[nodeId];
+      if(node.result){ showResult(node.result, node.special); return; }
+      els.question.textContent = node.question;
+      renderPath();
+      els.buttons.innerHTML = `
+        <button class="m-btn m-btn--success" type="button" id="btnYes" accesskey="o" title="Oui (Alt+O)">✓ Oui</button>
+        <button class="m-btn m-btn--danger"  type="button" id="btnNo"  accesskey="n" title="Non (Alt+N)">✗ Non</button>
+      `;
+      document.getElementById('btnYes').addEventListener('click', () => answer(true));
+      document.getElementById('btnNo').addEventListener('click',  () => answer(false));
+    }
+    function showResult(category, isSpecial){
+      els.card.innerHTML = `
+        <div class="m-result" role="status" aria-live="assertive">
+          <h2>Catégorie identifiée</h2>
+          ${pathHistory.length ? '<div class="m-path" id="resPath"></div>' : ''}
+          <div class="m-badge" id="resCat" aria-label="Catégorie">${category}</div>
+          ${isSpecial ? '<div class="m-note"><strong>Attention&nbsp;:</strong> Cette catégorie nécessite une confirmation ou une demande particulière.</div>' : ''}
+          <div style="margin-top: var(--m-space-5); display:flex; gap: var(--m-space-3); flex-wrap: wrap; justify-content:center;">
+            <button class="m-btn" type="button" id="btnCopy">Copier le résultat</button>
+            <button class="m-btn m-btn--primary" type="button" id="btnRestart">Nouvelle classification</button>
+          </div>
+        </div>
+      `;
+      if(pathHistory.length){
+        const resPath = document.getElementById('resPath');
+        resPath.innerHTML = pathHistory.map((step, i) => {
+          const [q, a] = step.split(" → ");
+          return '<span class="m-crumb"><b>Q' + (i+1) + '.</b> ' + q + ' • <i>' + a + '</i></span>';
+        }).join("");
+      }
+      document.getElementById('btnRestart').addEventListener('click', reset);
+      document.getElementById('btnCopy').addEventListener('click', async () => {
+        try{
+          const text = 'Catégorie déchets: ' + category + (isSpecial ? ' (⚠ confirmation requise)' : '');
+          await navigator.clipboard.writeText(text);
+          document.getElementById('btnCopy').textContent = 'Copié !';
+          setTimeout(() => (document.getElementById('btnCopy').textContent = 'Copier le résultat'), 1400);
+        }catch(e){ alert('Impossible de copier automatiquement.'); }
+      });
+    }
+    function answer(isYes){
+      const node = decisionTree[currentNode];
+      const nextNode = isYes ? node.yes : node.no;
+      pathHistory.push(node.question + " → " + (isYes ? "OUI" : "NON"));
+      if(typeof nextNode === 'string'){
+        currentNode = nextNode;
+        showQuestion(currentNode);
+      }else{
+        showResult(nextNode.result, nextNode.special);
+      }
+    }
+    function reset(){
+      currentNode = 'start';
+      pathHistory = [];
+      document.querySelector('.m-content').innerHTML = `
+        <div class="m-card" id="card">
+          <div class="m-question" id="question">Chargement…</div>
+          <div id="pathContainer" class="m-path" hidden></div>
+          <div class="m-buttons" id="buttons" role="group" aria-label="Réponses possibles"></div>
+          <div>
+            <button class="m-btn m-btn--ghost m-btn--block" id="btnResetBottom" type="button">Recommencer</button>
+          </div>
+        </div>
+        <div class="m-help" aria-live="polite">
+          <span>Compatible SharePoint (web part Intégrer) · Thème clair/sombre · Alt+O / Alt+N / Alt+R</span>
+        </div>
+      `;
+      bind();
+      showQuestion(currentNode);
+    }
+    function bind(){
+      els.card = document.getElementById('card');
+      els.question = document.getElementById('question');
+      els.buttons = document.getElementById('buttons');
+      els.path = document.getElementById('pathContainer');
+      els.resetBottom = document.getElementById('btnResetBottom');
+      if(els.resetBottom) els.resetBottom.addEventListener('click', reset);
+    }
+    window.addEventListener('keydown', (e) => {
+      if(e.altKey && (e.key.toLowerCase() === 'o')){ e.preventDefault(); answer(true); }
+      if(e.altKey && (e.key.toLowerCase() === 'n')){ e.preventDefault(); answer(false); }
+      if(e.altKey && (e.key.toLowerCase() === 'r')){ e.preventDefault(); reset(); }
+    });
+    if(els.resetTop) els.resetTop.addEventListener('click', reset);
+    if(els.resetBottom) els.resetBottom.addEventListener('click', reset);
+    showQuestion(currentNode);
+  </script>
+</body>
+</html>
